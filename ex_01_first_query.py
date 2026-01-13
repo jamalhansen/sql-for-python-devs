@@ -1,8 +1,9 @@
 import duckdb
 
-def run_query():
+
+def run_query() -> None:
     # Connect to DuckDB in-memory
-    with duckdb.connect(':memory:') as con:
+    with duckdb.connect(":memory:") as con:
         # Create table
         con.execute("""
             CREATE TABLE data(name VARCHAR, score INTEGER)
@@ -11,7 +12,7 @@ def run_query():
         # Insert data
         con.executemany(
             "INSERT INTO data VALUES (?, ?)",
-            [('Alice', 95), ('Bob', 87), ('Carol', 92)]
+            [("Alice", 95), ("Bob", 87), ("Carol", 92)],
         )
 
         # Query the data
@@ -21,6 +22,7 @@ def run_query():
         """).fetchall()
 
     print(result)
+
 
 if __name__ == "__main__":
     run_query()
