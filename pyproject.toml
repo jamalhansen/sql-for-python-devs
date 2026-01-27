@@ -1,20 +1,25 @@
 [project]
 name = "sql-for-python-devs"
 version = "0.1.0"
-description = "Add your description here"
+description = "Learning SQL fundamentals through Python examples using DuckDB"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.10"
 dependencies = [
     "duckdb>=1.4.3",
     "faker>=40.1.0",
     "pandas>=2.3.3",
+    "python-frontmatter>=1.1.0",
 ]
 
 [dependency-groups]
 dev = [
     "pytest>=9.0.2",
+    "pytest-cov>=5.0.0",
     "ruff>=0.14.11",
 ]
 
+[project.scripts]
+extract-from-blog = "extract_from_blog:main"
+
 [tool.pytest.ini_options]
-pythonpath = "."
+pythonpath = [".", "exercises"]

@@ -3,6 +3,10 @@ __pycache__/
 *.py[codz]
 *$py.class
 
+# Project-specific: extracted code from blog
+exercises/*.py
+sql/*.sql
+
 # C extensions
 *.so
 
