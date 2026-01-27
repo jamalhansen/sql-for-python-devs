@@ -22,6 +22,7 @@ CODE_SNIPPETS = {
     "05_sql-thinks-in-sets-not-loops.py",
     "06_select-choosing-your-columns.py",
     "07_from-where-your-data-lives.py",
+    "08_order-by-sorting-your-results.py",
 }
 
 
@@ -197,6 +198,8 @@ class TestExerciseDirectoryStructure:
 
         for exercise in exercise_files:
             assert exercise.name in all_known, (
-                f"{exercise.name} is not categorized as RUNNABLE or SNIPPET. "
-                f"Add it to the appropriate set in test_exercises.py"
+                f"{exercise.name} is not categorized.\n"
+                f"Add it to one of these sets in test_exercises.py:\n"
+                f"  - RUNNABLE_EXERCISES: if it's a complete script that can run standalone\n"
+                f"  - CODE_SNIPPETS: if it references undefined variables like 'customers'"
             )
