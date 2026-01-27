@@ -118,8 +118,10 @@ def query_to_dict_list(conn: duckdb.DuckDBPyConnection, query: str) -> list[dict
     Returns:
         List of result dictionaries with column names as keys
     """
-    result = conn.execute(query).fetch_arrow_table()
-    return result.to_pylist()
+    cursor = conn.execute(query)
+    columns = [desc[0] for desc in cursor.description]
+    rows = cursor.fetchall()
+    return [dict(zip(columns, row)) for row in rows]
 
 
 def load_sql_file(file_path: Path | str) -> str:
