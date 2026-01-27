@@ -1,0 +1,55 @@
+#!/bin/bash
+# Pre-push hook for blog repo: Verify SQL for Python Devs code examples
+#
+# Installation:
+#   cp scripts/hooks/pre-push /path/to/blog/.git/hooks/pre-push
+#   chmod +x /path/to/blog/.git/hooks/pre-push
+#
+# Or from your blog repo:
+#   cp /path/to/sql-for-python-devs/scripts/hooks/pre-push .git/hooks/
+#   chmod +x .git/hooks/pre-push
+
+# Path to the sql-for-python-devs test project
+# Adjust this path if your project is in a different location
+TEST_PROJECT="$HOME/projects/sql-for-python-devs"
+
+# Only run verification if the test project exists
+if [ ! -d "$TEST_PROJECT" ]; then
+    echo "Warning: sql-for-python-devs not found at $TEST_PROJECT"
+    echo "Skipping blog code verification."
+    echo "To enable, clone: git clone https://github.com/jamalhansen/sql-for-python-devs.git $TEST_PROJECT"
+    exit 0
+fi
+
+# Check if verification script exists
+VERIFY_SCRIPT="$TEST_PROJECT/scripts/verify-blog-examples.sh"
+if [ ! -f "$VERIFY_SCRIPT" ]; then
+    echo "Warning: Verification script not found at $VERIFY_SCRIPT"
+    echo "Skipping blog code verification."
+    exit 0
+fi
+
+echo "========================================"
+echo "Verifying blog code examples..."
+echo "========================================"
+echo ""
+
+# Run verification with current directory as blog path
+BLOG_PATH="$(pwd)" "$VERIFY_SCRIPT"
+
+if [ $? -ne 0 ]; then
+    echo ""
+    echo "========================================"
+    echo "ERROR: Blog code examples failed verification!"
+    echo "========================================"
+    echo ""
+    echo "Fix the failing tests above before pushing."
+    echo ""
+    echo "To skip this check (not recommended), use:"
+    echo "  git push --no-verify"
+    echo ""
+    exit 1
+fi
+
+echo ""
+echo "Blog code verification passed!"
