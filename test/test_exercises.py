@@ -23,6 +23,8 @@ CODE_SNIPPETS = {
     "06_select-choosing-your-columns.py",
     "07_from-where-your-data-lives.py",
     "08_order-by-sorting-your-results.py",
+    "09_where-filtering-your-data.py",
+    "10_group-by-aggregating-your-data.py",
 }
 
 

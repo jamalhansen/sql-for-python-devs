@@ -12,6 +12,11 @@ from helpers.db import execute_sql_file, load_sql_file, query_to_dict_list
 # SQL files that reference external data files - now provided in data/
 EXTERNAL_DATA_FILES = set()  # All files have sample data
 
+# SQL files that are intentional examples of invalid queries from the blog
+EXPECTED_FAILURES = {
+    "10_group-by-aggregating-your-data_4_2.sql",  # Demonstrates missing GROUP BY column
+}
+
 
 def get_all_sql_files():
     """Discover all SQL files in the sql/ directory."""
@@ -33,6 +38,9 @@ class TestAllSqlFilesExecute:
         """Every SQL file should execute without syntax errors."""
         if sql_file.name in EXTERNAL_DATA_FILES:
             pytest.skip(f"Skipping {sql_file.name} - references external data file")
+
+        if sql_file.name in EXPECTED_FAILURES:
+            pytest.skip(f"Skipping {sql_file.name} - intentional example of invalid SQL")
 
         # This will raise if SQL has syntax errors or references missing tables
         result = execute_sql_file(db_with_customers, sql_file)
