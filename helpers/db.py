@@ -69,20 +69,20 @@ def load_sample_orders(conn: duckdb.DuckDBPyConnection) -> int:
     """
     conn.execute("""
         CREATE TABLE orders (
-            order_id INTEGER,
+            id INTEGER,
             customer_id INTEGER,
+            product VARCHAR,
             amount DECIMAL(10, 2),
-            order_date DATE,
-            status VARCHAR
+            order_date DATE
         )
     """)
 
     sample_data = [
-        (1001, 1, 150.50, "2024-03-01", "completed"),
-        (1002, 2, 75.00, "2024-03-02", "completed"),
-        (1003, 1, 200.00, "2024-03-05", "pending"),
-        (1004, 3, 50.25, "2024-03-06", "completed"),
-        (1005, 4, 300.00, "2024-03-07", "shipped"),
+        (1001, 1, "Widget", 150.50, "2024-03-01"),
+        (1002, 2, "Gadget", 75.00, "2024-03-02"),
+        (1003, 1, "Gizmo", 200.00, "2024-03-05"),
+        (1004, 3, "Widget", 50.25, "2024-03-06"),
+        (1005, 4, "Doohickey", 300.00, "2024-03-07"),
     ]
 
     conn.executemany(

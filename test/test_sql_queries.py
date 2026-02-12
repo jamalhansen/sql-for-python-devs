@@ -15,6 +15,7 @@ EXTERNAL_DATA_FILES = set()  # All files have sample data
 # SQL files that are intentional examples of invalid queries from the blog
 EXPECTED_FAILURES = {
     "10_group-by-aggregating-your-data_4_2.sql",  # Demonstrates missing GROUP BY column
+    "11_having-filtering-grouped-results_2_1.sql",  # Demonstrates aggregate in WHERE clause
 }
 
 
@@ -34,7 +35,7 @@ class TestAllSqlFilesExecute:
         get_all_sql_files(),
         ids=lambda f: f.name,
     )
-    def test_sql_file_executes_successfully(self, db_with_customers, sql_file):
+    def test_sql_file_executes_successfully(self, db_with_sample_data, sql_file):
         """Every SQL file should execute without syntax errors."""
         if sql_file.name in EXTERNAL_DATA_FILES:
             pytest.skip(f"Skipping {sql_file.name} - references external data file")
@@ -43,7 +44,7 @@ class TestAllSqlFilesExecute:
             pytest.skip(f"Skipping {sql_file.name} - intentional example of invalid SQL")
 
         # This will raise if SQL has syntax errors or references missing tables
-        result = execute_sql_file(db_with_customers, sql_file)
+        result = execute_sql_file(db_with_sample_data, sql_file)
         assert result is not None, f"{sql_file.name} should return results"
 
     @pytest.mark.parametrize(
@@ -283,17 +284,17 @@ class TestSampleDataIntegration:
         result = query_to_dict_list(
             db_with_sample_data,
             """
-            SELECT c.name, o.amount, o.status
+            SELECT c.name, o.product, o.amount
             FROM customers c
             JOIN orders o ON c.id = o.customer_id
-            ORDER BY o.order_id
+            ORDER BY o.id
             """,
         )
 
         assert len(result) == 5, "Should have 5 orders"
         assert result[0]["name"] == "Alice Johnson"
         assert float(result[0]["amount"]) == 150.50
-        assert result[0]["status"] == "completed"
+        assert result[0]["product"] == "Widget"
 
     def test_aggregate_queries_work(self, db_with_sample_data):
         """Aggregate functions should work on sample data."""

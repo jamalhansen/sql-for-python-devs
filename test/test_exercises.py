@@ -17,6 +17,11 @@ RUNNABLE_EXERCISES = {
     "04_dont-forget-to-save-persisting-your-duckdb-database.py",
 }
 
+# Exercise files that are setup/data-generation scripts (run without error but no stdout)
+SETUP_SCRIPTS = {
+    "12_joins-explained-for-python-developers.py",
+}
+
 # Exercise files that are code snippets (reference undefined variables like `customers`)
 CODE_SNIPPETS = {
     "05_sql-thinks-in-sets-not-loops.py",
@@ -25,6 +30,8 @@ CODE_SNIPPETS = {
     "08_order-by-sorting-your-results.py",
     "09_where-filtering-your-data.py",
     "10_group-by-aggregating-your-data.py",
+    "11_having-filtering-grouped-results.py",
+    "13_subqueries-when-sql-needs-helper-functions.py",
 }
 
 
@@ -132,6 +139,35 @@ class TestRunnableExercises:
         )
 
 
+class TestSetupScripts:
+    """Test that setup/data-generation scripts run without error."""
+
+    @pytest.mark.parametrize(
+        "exercise_name",
+        sorted(SETUP_SCRIPTS),
+        ids=lambda f: f,
+    )
+    def test_exercise_runs_without_error(self, exercise_name):
+        """Setup scripts should run without raising exceptions."""
+        exercise_file = Path("exercises") / exercise_name
+        if not exercise_file.exists():
+            pytest.skip(f"Exercise file not found: {exercise_name}")
+
+        result = subprocess.run(
+            [sys.executable, str(exercise_file)],
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+
+        if result.returncode != 0:
+            pytest.fail(
+                f"{exercise_name} failed with exit code {result.returncode}:\n"
+                f"STDOUT:\n{result.stdout}\n"
+                f"STDERR:\n{result.stderr}"
+            )
+
+
 class TestCodeSnippets:
     """Test that code snippet exercises are valid (but can't be run standalone)."""
 
@@ -169,15 +205,15 @@ class TestCodeSnippets:
         sorted(CODE_SNIPPETS),
         ids=lambda f: f,
     )
-    def test_snippet_references_customers(self, snippet_name):
-        """Code snippets should reference the 'customers' variable (as expected)."""
+    def test_snippet_references_sample_data(self, snippet_name):
+        """Code snippets should reference sample data variables (customers or orders)."""
         snippet_file = Path("exercises") / snippet_name
         if not snippet_file.exists():
             pytest.skip(f"Snippet file not found: {snippet_name}")
 
         source = snippet_file.read_text()
-        assert "customers" in source or "customer" in source, (
-            f"{snippet_name} should reference customers data"
+        assert "customer" in source or "order" in source, (
+            f"{snippet_name} should reference sample data (customers or orders)"
         )
 
 
@@ -196,12 +232,13 @@ class TestExerciseDirectoryStructure:
     def test_all_exercises_are_categorized(self):
         """Every exercise file should be in either RUNNABLE or SNIPPETS."""
         exercise_files = get_all_exercise_files()
-        all_known = RUNNABLE_EXERCISES | CODE_SNIPPETS
+        all_known = RUNNABLE_EXERCISES | SETUP_SCRIPTS | CODE_SNIPPETS
 
         for exercise in exercise_files:
             assert exercise.name in all_known, (
                 f"{exercise.name} is not categorized.\n"
                 f"Add it to one of these sets in test_exercises.py:\n"
-                f"  - RUNNABLE_EXERCISES: if it's a complete script that can run standalone\n"
+                f"  - RUNNABLE_EXERCISES: if it's a complete script that produces output\n"
+                f"  - SETUP_SCRIPTS: if it's a complete script that runs silently (e.g. data generation)\n"
                 f"  - CODE_SNIPPETS: if it references undefined variables like 'customers'"
             )

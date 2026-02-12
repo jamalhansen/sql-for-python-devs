@@ -109,26 +109,26 @@ class TestLoadSampleOrders:
         ).fetchall()
 
         column_names = [c[0] for c in columns]
-        assert column_names == ["order_id", "customer_id", "amount", "order_date", "status"]
+        assert column_names == ["id", "customer_id", "product", "amount", "order_date"]
 
     def test_loads_expected_data(self, db_connection):
         """Should load the exact expected order records."""
         load_sample_orders(db_connection)
 
         orders = db_connection.execute(
-            "SELECT order_id, customer_id, status FROM orders ORDER BY order_id"
+            "SELECT id, customer_id, product FROM orders ORDER BY id"
         ).fetchall()
 
-        assert orders[0] == (1001, 1, "completed")
-        assert orders[2] == (1003, 1, "pending")
-        assert orders[4] == (1005, 4, "shipped")
+        assert orders[0] == (1001, 1, "Widget")
+        assert orders[2] == (1003, 1, "Gizmo")
+        assert orders[4] == (1005, 4, "Doohickey")
 
     def test_order_amounts(self, db_connection):
         """Should have correct decimal amounts."""
         load_sample_orders(db_connection)
 
         amounts = db_connection.execute(
-            "SELECT order_id, amount FROM orders ORDER BY order_id"
+            "SELECT id, amount FROM orders ORDER BY id"
         ).fetchall()
 
         assert float(amounts[0][1]) == 150.50
