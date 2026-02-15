@@ -93,6 +93,86 @@ def load_sample_orders(conn: duckdb.DuckDBPyConnection) -> int:
     return len(sample_data)
 
 
+def load_null_columns(conn: duckdb.DuckDBPyConnection) -> None:
+    """
+    Add nullable columns to customers table for NULL examples.
+
+    Must be called after load_sample_customers.
+    """
+    conn.execute("ALTER TABLE customers ADD COLUMN middle_name VARCHAR")
+    conn.execute("ALTER TABLE customers ADD COLUMN nickname VARCHAR")
+    conn.execute("ALTER TABLE customers ADD COLUMN phone VARCHAR")
+    conn.execute("ALTER TABLE customers ADD COLUMN state VARCHAR")
+    conn.execute("ALTER TABLE customers ADD COLUMN status VARCHAR")
+
+    # Populate with a mix of values and NULLs
+    conn.execute("""
+        UPDATE customers SET
+            middle_name = CASE WHEN id IN (1, 3) THEN 'Marie' ELSE NULL END,
+            nickname = CASE WHEN id IN (2, 5) THEN 'Bobby' ELSE NULL END,
+            phone = CASE WHEN id IN (1, 2, 4) THEN '555-0100' ELSE NULL END,
+            state = CASE WHEN id IN (1, 3, 5) THEN 'NY' ELSE NULL END,
+            status = CASE WHEN id IN (1, 2, 3) THEN 'active' ELSE NULL END
+    """)
+
+
+def load_sample_vendors(conn: duckdb.DuckDBPyConnection) -> int:
+    """
+    Load sample vendor data into DuckDB.
+
+    Returns:
+        Number of records loaded
+    """
+    conn.execute("""
+        CREATE TABLE vendors (
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL,
+            headquarters_city TEXT
+        )
+    """)
+
+    sample_data = [
+        (1, "Acme Supplies", "Portland"),
+        (2, "Global Parts", "Seattle"),
+        (3, "Quick Ship", None),
+    ]
+
+    conn.executemany(
+        "INSERT INTO vendors VALUES (?, ?, ?)",
+        sample_data,
+    )
+
+    return len(sample_data)
+
+
+def load_sample_stats(conn: duckdb.DuckDBPyConnection) -> int:
+    """
+    Load sample stats data into DuckDB for NULLIF examples.
+
+    Returns:
+        Number of records loaded
+    """
+    conn.execute("""
+        CREATE TABLE stats (
+            total DECIMAL(10, 2),
+            count INTEGER
+        )
+    """)
+
+    sample_data = [
+        (100.0, 5),
+        (200.0, 0),
+        (50.0, 10),
+    ]
+
+    conn.executemany(
+        "INSERT INTO stats VALUES (?, ?)",
+        sample_data,
+    )
+
+    return len(sample_data)
+
+
 def query_to_list(conn: duckdb.DuckDBPyConnection, query: str) -> list:
     """
     Execute a query and return results as a list of tuples.
@@ -143,6 +223,9 @@ def execute_sql_file(
     """
     Load and execute SQL from a file.
 
+    Handles files with multiple statements separated by semicolons,
+    returning the result of the last statement.
+
     Args:
         conn: DuckDB connection
         file_path: Path to SQL file
@@ -150,5 +233,17 @@ def execute_sql_file(
     Returns:
         List of result tuples
     """
-    query = load_sql_file(file_path)
-    return conn.execute(query).fetchall()
+    content = load_sql_file(file_path)
+    statements = [s.strip() for s in content.split(";") if s.strip()]
+
+    # Filter out comment-only statements (left over after splitting on ;)
+    def is_code(stmt):
+        lines = [l.strip() for l in stmt.split("\n")]
+        return any(l and not l.startswith("--") for l in lines)
+
+    result = None
+    for stmt in statements:
+        if is_code(stmt):
+            result = conn.execute(stmt).fetchall()
+
+    return result

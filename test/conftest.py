@@ -4,7 +4,13 @@ import os
 import pytest
 import duckdb
 from pathlib import Path
-from helpers.db import load_sample_customers, load_sample_orders
+from helpers.db import (
+    load_sample_customers,
+    load_sample_orders,
+    load_null_columns,
+    load_sample_vendors,
+    load_sample_stats,
+)
 
 
 def pytest_configure(config):
@@ -29,7 +35,9 @@ def pytest_configure(config):
         # Only run extraction if blog path exists
         if blog_path.exists():
             print("\nExtracting latest exercises from blog...", flush=True)
-            extract_series_exercises(blog_path, series, output_path, code_block_index=0)
+            extract_series_exercises(
+                blog_path, series, output_path, code_block_index=0
+            )
     except ImportError:
         # extract_from_blog not available, skip extraction
         pass
@@ -62,10 +70,34 @@ def db_with_orders(db_connection):
 
 @pytest.fixture
 def db_with_sample_data(db_connection):
-    """Provide DuckDB connection with both customer and order tables."""
+    """Provide DuckDB connection with baseline data for all posts."""
     load_sample_customers(db_connection)
     load_sample_orders(db_connection)
     return db_connection
+
+
+@pytest.fixture
+def db_setup_for_file(request, db_connection):
+    """
+    Provides a DB connection with data loaded based on post number.
+    Parses post number from the parametrized sql_file path.
+    """
+    sql_file = request.param
+    try:
+        post_num = int(sql_file.name.split("_")[0])
+    except (ValueError, IndexError):
+        post_num = 0  # Default for files not following the pattern
+
+    load_sample_customers(db_connection)
+    load_sample_orders(db_connection)
+
+    # For posts 15 and later, load the extended schema and data
+    if post_num >= 15:
+        load_null_columns(db_connection)
+        load_sample_vendors(db_connection)
+        load_sample_stats(db_connection)
+
+    return db_connection, sql_file
 
 
 @pytest.fixture

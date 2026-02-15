@@ -80,8 +80,16 @@ def split_sql_by_comments(sql_content: str) -> list[str]:
     Split SQL content by comment lines.
 
     Groups queries separated by comment lines starting with '--'.
+    CTE queries (starting with WITH) are kept intact since their
+    inline comments are annotations, not query separators.
     """
-    lines = sql_content.strip().split("\n")
+    stripped_content = sql_content.strip()
+
+    # CTE queries are a single statement — don't split them
+    if stripped_content.upper().startswith("WITH"):
+        return [stripped_content]
+
+    lines = stripped_content.split("\n")
     queries = []
     current_query = []
 
@@ -134,6 +142,12 @@ def extract_series_exercises(
     output_dir.mkdir(parents=True, exist_ok=True)
     sql_dir = output_dir.parent / "sql"
     sql_dir.mkdir(parents=True, exist_ok=True)
+
+    # Clean old extracted files before re-extracting
+    for old_file in output_dir.glob("*.py"):
+        old_file.unlink()
+    for old_file in sql_dir.glob("*.sql"):
+        old_file.unlink()
 
     for idx, (post_path, weight) in enumerate(posts, 1):
         post = frontmatter.load(post_path)

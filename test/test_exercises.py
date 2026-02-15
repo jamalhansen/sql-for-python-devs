@@ -15,6 +15,7 @@ RUNNABLE_EXERCISES = {
     "02_zero-setup-sql-run-your-first-sql-query-in-under-5-minutes-with-duckdb.py",
     "03_generate-practice-data-with-faker.py",
     "04_dont-forget-to-save-persisting-your-duckdb-database.py",
+    "15_null-the-value-that-isnt.py",
 }
 
 # Exercise files that are setup/data-generation scripts (run without error but no stdout)
@@ -32,6 +33,7 @@ CODE_SNIPPETS = {
     "10_group-by-aggregating-your-data.py",
     "11_having-filtering-grouped-results.py",
     "13_subqueries-when-sql-needs-helper-functions.py",
+    "14_ctes-making-your-sql-readable.py",
 }
 
 

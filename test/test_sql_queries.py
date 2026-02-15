@@ -16,6 +16,13 @@ EXTERNAL_DATA_FILES = set()  # All files have sample data
 EXPECTED_FAILURES = {
     "10_group-by-aggregating-your-data_4_2.sql",  # Demonstrates missing GROUP BY column
     "11_having-filtering-grouped-results_2_1.sql",  # Demonstrates aggregate in WHERE clause
+    "14_ctes-making-your-sql-readable_3_1.sql",  # CTE syntax template with placeholder comments
+}
+
+# SQL files that are DDL setup scripts (ALTER TABLE, CREATE TABLE), not queries
+SETUP_SCRIPTS = {
+    "15_null-the-value-that-isnt_2_1.sql",  # ALTER TABLE adds nullable columns
+    "15_null-the-value-that-isnt_9_1.sql",  # CREATE TABLE vendors + INSERT
 }
 
 
@@ -31,20 +38,26 @@ class TestAllSqlFilesExecute:
     """Auto-discovery tests that verify ALL SQL files execute without error."""
 
     @pytest.mark.parametrize(
-        "sql_file",
+        "db_setup_for_file",
         get_all_sql_files(),
+        indirect=True,
         ids=lambda f: f.name,
     )
-    def test_sql_file_executes_successfully(self, db_with_sample_data, sql_file):
+    def test_sql_file_executes_successfully(self, db_setup_for_file):
         """Every SQL file should execute without syntax errors."""
+        db, sql_file = db_setup_for_file
+
         if sql_file.name in EXTERNAL_DATA_FILES:
             pytest.skip(f"Skipping {sql_file.name} - references external data file")
 
         if sql_file.name in EXPECTED_FAILURES:
             pytest.skip(f"Skipping {sql_file.name} - intentional example of invalid SQL")
 
+        if sql_file.name in SETUP_SCRIPTS:
+            pytest.skip(f"Skipping {sql_file.name} - DDL setup script, not a query")
+
         # This will raise if SQL has syntax errors or references missing tables
-        result = execute_sql_file(db_with_sample_data, sql_file)
+        result = execute_sql_file(db, sql_file)
         assert result is not None, f"{sql_file.name} should return results"
 
     @pytest.mark.parametrize(
@@ -54,6 +67,9 @@ class TestAllSqlFilesExecute:
     )
     def test_sql_file_is_not_empty(self, sql_file):
         """Every SQL file should contain a query."""
+        if sql_file.name in SETUP_SCRIPTS:
+            pytest.skip(f"Skipping {sql_file.name} - DDL setup script")
+
         content = load_sql_file(sql_file)
         assert len(content.strip()) > 0, f"{sql_file.name} should not be empty"
         assert "SELECT" in content.upper(), f"{sql_file.name} should contain SELECT"
