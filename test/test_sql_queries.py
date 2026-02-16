@@ -76,11 +76,11 @@ class TestAllSqlFilesExecute:
 
 
 class TestSelectColumns:
-    """Tests for SELECT column operations (Exercise 06)."""
+    """Tests for SELECT column operations (Exercise 07)."""
 
     def test_select_name_email_returns_correct_columns(self, db_with_customers):
         """SELECT name, email should return exactly those two columns."""
-        sql_file = Path("sql/06_select-choosing-your-columns_1_1.sql")
+        sql_file = Path("sql/07_select-choosing-your-columns_1_1.sql")
         result = execute_sql_file(db_with_customers, sql_file)
 
         assert len(result) == 5, "Should return all 5 customers"
@@ -93,7 +93,7 @@ class TestSelectColumns:
 
     def test_select_with_alias(self, db_with_customers):
         """SELECT with AS alias should rename columns."""
-        sql_file = Path("sql/06_select-choosing-your-columns_2_1.sql")
+        sql_file = Path("sql/07_select-choosing-your-columns_2_1.sql")
         if not sql_file.exists():
             pytest.skip("SQL file not found")
 
@@ -102,7 +102,7 @@ class TestSelectColumns:
 
     def test_string_concatenation_creates_location(self, db_with_customers):
         """String concatenation should create 'City, USA' format."""
-        sql_file = Path("sql/06_select-choosing-your-columns_3_1.sql")
+        sql_file = Path("sql/07_select-choosing-your-columns_3_1.sql")
         result = execute_sql_file(db_with_customers, sql_file)
 
         locations = {row[0]: row[1] for row in result}
@@ -115,7 +115,7 @@ class TestSelectColumns:
 
     def test_year_calculation_computes_tenure(self, db_with_customers):
         """Year math should calculate years as customer correctly."""
-        sql_file = Path("sql/06_select-choosing-your-columns_3_2.sql")
+        sql_file = Path("sql/07_select-choosing-your-columns_3_2.sql")
         result = execute_sql_file(db_with_customers, sql_file)
 
         tenure_by_name = {row[0]: row[1] for row in result}
@@ -127,7 +127,7 @@ class TestSelectColumns:
 
     def test_upper_function_transforms_city(self, db_with_customers):
         """UPPER() function should transform city to uppercase."""
-        sql_file = Path("sql/06_select-choosing-your-columns_3_3.sql")
+        sql_file = Path("sql/07_select-choosing-your-columns_3_3.sql")
         if not sql_file.exists():
             pytest.skip("SQL file not found")
 
@@ -140,7 +140,7 @@ class TestSelectColumns:
 
     def test_select_single_column(self, db_with_customers):
         """SELECT city should return just the city column."""
-        sql_file = Path("sql/06_select-choosing-your-columns_4_1.sql")
+        sql_file = Path("sql/07_select-choosing-your-columns_4_1.sql")
         if not sql_file.exists():
             pytest.skip("SQL file not found")
 
@@ -155,7 +155,7 @@ class TestSelectColumns:
 
     def test_select_distinct_removes_duplicates(self, db_with_customers):
         """SELECT DISTINCT should remove duplicate values."""
-        sql_file = Path("sql/06_select-choosing-your-columns_4_2.sql")
+        sql_file = Path("sql/07_select-choosing-your-columns_4_2.sql")
         if not sql_file.exists():
             pytest.skip("SQL file not found")
 
@@ -191,11 +191,11 @@ class TestSetOperations:
 
 
 class TestFromClause:
-    """Tests for FROM clause operations (Exercise 07)."""
+    """Tests for FROM clause operations (Exercise 06)."""
 
     def test_select_all_names_from_customers(self, db_with_customers):
         """Basic FROM should return all customer names."""
-        sql_file = Path("sql/07_from-where-your-data-lives_1_1.sql")
+        sql_file = Path("sql/06_from-where-your-data-lives_1_1.sql")
         result = execute_sql_file(db_with_customers, sql_file)
 
         names = [row[0] for row in result]
@@ -205,7 +205,7 @@ class TestFromClause:
 
     def test_select_star_returns_all_columns(self, db_with_customers):
         """SELECT * should return all columns from the table."""
-        sql_file = Path("sql/07_from-where-your-data-lives_2_1.sql")
+        sql_file = Path("sql/06_from-where-your-data-lives_2_1.sql")
         if not sql_file.exists():
             pytest.skip("SQL file not found")
 
@@ -217,7 +217,7 @@ class TestFromClause:
 
     def test_select_specific_columns(self, db_with_customers):
         """SELECT name, email should return only those columns."""
-        sql_file = Path("sql/07_from-where-your-data-lives_2_2.sql")
+        sql_file = Path("sql/06_from-where-your-data-lives_2_2.sql")
         if not sql_file.exists():
             pytest.skip("SQL file not found")
 
@@ -232,7 +232,7 @@ class TestFromClause:
 
     def test_select_city_column(self, db_with_customers):
         """SELECT city should return city for all customers."""
-        sql_file = Path("sql/07_from-where-your-data-lives_2_3.sql")
+        sql_file = Path("sql/06_from-where-your-data-lives_2_3.sql")
         if not sql_file.exists():
             pytest.skip("SQL file not found")
 
@@ -253,7 +253,7 @@ class TestExternalDataQueries:
 
     def test_csv_query_documents_feature(self):
         """Document that DuckDB can query CSV files directly."""
-        sql_file = Path("sql/07_from-where-your-data-lives_3_1.sql")
+        sql_file = Path("sql/06_from-where-your-data-lives_3_1.sql")
         if not sql_file.exists():
             pytest.skip("SQL file not found")
 
@@ -263,7 +263,7 @@ class TestExternalDataQueries:
 
     def test_parquet_query_documents_feature(self):
         """Document that DuckDB can query Parquet files directly."""
-        sql_file = Path("sql/07_from-where-your-data-lives_3_2.sql")
+        sql_file = Path("sql/06_from-where-your-data-lives_3_2.sql")
         if not sql_file.exists():
             pytest.skip("SQL file not found")
 

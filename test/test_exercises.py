@@ -26,8 +26,8 @@ SETUP_SCRIPTS = {
 # Exercise files that are code snippets (reference undefined variables like `customers`)
 CODE_SNIPPETS = {
     "05_sql-thinks-in-sets-not-loops.py",
-    "06_select-choosing-your-columns.py",
-    "07_from-where-your-data-lives.py",
+    "06_from-where-your-data-lives.py",
+    "07_select-choosing-your-columns.py",
     "08_order-by-sorting-your-results.py",
     "09_where-filtering-your-data.py",
     "10_group-by-aggregating-your-data.py",
