@@ -34,6 +34,7 @@ CODE_SNIPPETS = {
     "11_having-filtering-grouped-results.py",
     "13_subqueries-when-sql-needs-helper-functions.py",
     "14_ctes-making-your-sql-readable.py",
+    "16_window-functions-the-feature-python-developers-miss-most.py",
 }
 
 

@@ -17,6 +17,7 @@ EXPECTED_FAILURES = {
     "10_group-by-aggregating-your-data_4_2.sql",  # Demonstrates missing GROUP BY column
     "11_having-filtering-grouped-results_2_1.sql",  # Demonstrates aggregate in WHERE clause
     "14_ctes-making-your-sql-readable_3_1.sql",  # CTE syntax template with placeholder comments
+    "16_window-functions-the-feature-python-developers-miss-most_3_1.sql",  # Window function syntax template with placeholder names
 }
 
 # SQL files that are DDL setup scripts (ALTER TABLE, CREATE TABLE), not queries
@@ -69,6 +70,9 @@ class TestAllSqlFilesExecute:
         """Every SQL file should contain a query."""
         if sql_file.name in SETUP_SCRIPTS:
             pytest.skip(f"Skipping {sql_file.name} - DDL setup script")
+
+        if sql_file.name in EXPECTED_FAILURES:
+            pytest.skip(f"Skipping {sql_file.name} - intentional example of invalid SQL")
 
         content = load_sql_file(sql_file)
         assert len(content.strip()) > 0, f"{sql_file.name} should not be empty"
