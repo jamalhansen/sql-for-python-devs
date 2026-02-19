@@ -35,6 +35,7 @@ CODE_SNIPPETS = {
     "13_subqueries-when-sql-needs-helper-functions.py",
     "14_ctes-making-your-sql-readable.py",
     "16_window-functions-the-feature-python-developers-miss-most.py",
+    "17_creating-tables-ddl-for-python-devs.py",
 }
 
 
@@ -214,9 +215,9 @@ class TestCodeSnippets:
         if not snippet_file.exists():
             pytest.skip(f"Snippet file not found: {snippet_name}")
 
-        source = snippet_file.read_text()
-        assert "customer" in source or "order" in source, (
-            f"{snippet_name} should reference sample data (customers or orders)"
+        source = snippet_file.read_text().lower()
+        assert "customer" in source or "order" in source or "product" in source, (
+            f"{snippet_name} should reference sample data (customers, orders, or products)"
         )
 
 

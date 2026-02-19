@@ -24,6 +24,18 @@ EXPECTED_FAILURES = {
 SETUP_SCRIPTS = {
     "15_null-the-value-that-isnt_2_1.sql",  # ALTER TABLE adds nullable columns
     "15_null-the-value-that-isnt_9_1.sql",  # CREATE TABLE vendors + INSERT
+    "17_creating-tables-ddl-for-python-devs_1_1.sql",  # CREATE TABLE example (no PK)
+    "17_creating-tables-ddl-for-python-devs_2_1.sql",  # CREATE TABLE with PRIMARY KEY
+    "17_creating-tables-ddl-for-python-devs_3_1.sql",  # CREATE TABLE with FOREIGN KEY
+    "17_creating-tables-ddl-for-python-devs_4_1.sql",  # CREATE TABLE with NULL/NOT NULL
+    "17_creating-tables-ddl-for-python-devs_5_1.sql",  # CREATE TABLE with DEFAULT
+    "17_creating-tables-ddl-for-python-devs_6_1.sql",  # CREATE TABLE with UNIQUE
+    "17_creating-tables-ddl-for-python-devs_7_1.sql",  # CREATE TABLE IF NOT EXISTS customers
+    "17_creating-tables-ddl-for-python-devs_7_2.sql",  # CREATE TABLE IF NOT EXISTS products
+    "17_creating-tables-ddl-for-python-devs_7_3.sql",  # CREATE TABLE IF NOT EXISTS orders
+    "17_creating-tables-ddl-for-python-devs_8_1.sql",  # DROP TABLE examples
+    "17_creating-tables-ddl-for-python-devs_9_1.sql",  # ALTER TABLE ADD COLUMN
+    "17_creating-tables-ddl-for-python-devs_9_2.sql",  # ALTER TABLE DROP COLUMN
 }
 
 
