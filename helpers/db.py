@@ -83,6 +83,11 @@ def load_sample_orders(conn: duckdb.DuckDBPyConnection) -> int:
         (1003, 1, "Gizmo", 200.00, "2024-03-05"),
         (1004, 3, "Widget", 50.25, "2024-03-06"),
         (1005, 4, "Doohickey", 300.00, "2024-03-07"),
+        (1006, 1, "Widget", 10.00, "2024-03-08"),
+        (1007, 1, "Widget", 500.00, "2024-03-09"),
+        (1008, 1, "Widget", 400.00, "2024-03-10"),
+        (1009, 1, "Widget", 600.00, "2024-03-11"),
+        (1010, 1, "Widget", 700.00, "2024-03-12"),
     ]
 
     conn.executemany(
@@ -114,6 +119,9 @@ def load_null_columns(conn: duckdb.DuckDBPyConnection) -> None:
             state = CASE WHEN id IN (1, 3, 5) THEN 'NY' ELSE NULL END,
             status = CASE WHEN id IN (1, 2, 3) THEN 'active' ELSE NULL END
     """)
+
+    # Add deleted_at column for post 18 exercises
+    conn.execute("ALTER TABLE customers ADD COLUMN deleted_at TIMESTAMP")
 
 
 def load_sample_vendors(conn: duckdb.DuckDBPyConnection) -> int:
@@ -171,6 +179,59 @@ def load_sample_stats(conn: duckdb.DuckDBPyConnection) -> int:
     )
 
     return len(sample_data)
+
+
+def load_advanced_data(conn: duckdb.DuckDBPyConnection) -> None:
+    """
+    Load advanced data needed for post 22 and 24.
+    """
+    # vip_customers (from post 18)
+    conn.execute("CREATE TABLE vip_customers (name TEXT, email TEXT)")
+
+    # salespeople and deals (from post 22)
+    conn.execute("""
+        CREATE TABLE salespeople (
+            id INTEGER PRIMARY KEY,
+            name TEXT,
+            region TEXT
+        )
+    """)
+    conn.execute("""
+        CREATE TABLE deals (
+            id INTEGER PRIMARY KEY,
+            salesperson_id INTEGER,
+            amount DECIMAL(10, 2),
+            status TEXT
+        )
+    """)
+    conn.executemany("INSERT INTO salespeople VALUES (?, ?, ?)", [
+        (1, "Alice", "North"),
+        (2, "Bob", "South"),
+        (3, "Carol", "North"),
+    ])
+    conn.executemany("INSERT INTO deals VALUES (?, ?, ?, ?)", [
+        (101, 1, 1000.00, "Closed"),
+        (102, 1, 500.00, "Open"),
+        (103, 2, 2000.00, "Closed"),
+        (104, 3, 1500.00, "Closed"),
+    ])
+
+    # newsletter_subscribers (from post 24)
+    conn.execute("CREATE TABLE newsletter_subscribers (email TEXT)")
+    conn.executemany("INSERT INTO newsletter_subscribers VALUES (?)", [
+        ("news1@example.com",),
+        ("news2@example.com",),
+        ("alice@example.com",), # overlap with customers
+    ])
+
+    # events (from post 24 JSON examples)
+    conn.execute("CREATE TABLE events (data JSON)")
+    conn.execute("""
+        INSERT INTO events VALUES 
+        ('{"type": "signup", "name": "John Doe", "address": {"city": "New York"}}'),
+        ('{"type": "login", "name": "John Doe"}'),
+        ('{"type": "signup", "name": "Jane Smith", "address": {"city": "Los Angeles"}}')
+    """)
 
 
 def query_to_list(conn: duckdb.DuckDBPyConnection, query: str) -> list:

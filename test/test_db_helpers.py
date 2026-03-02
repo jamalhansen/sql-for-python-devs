@@ -97,7 +97,7 @@ class TestLoadSampleOrders:
     def test_returns_correct_count(self, db_connection):
         """Should return the number of records loaded."""
         count = load_sample_orders(db_connection)
-        assert count == 5
+        assert count == 10
 
     def test_creates_orders_table(self, db_connection):
         """Should create orders table with correct schema."""

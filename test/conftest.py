@@ -10,6 +10,7 @@ from helpers.db import (
     load_null_columns,
     load_sample_vendors,
     load_sample_stats,
+    load_advanced_data,
 )
 
 
@@ -96,6 +97,7 @@ def db_setup_for_file(request, db_connection):
         load_null_columns(db_connection)
         load_sample_vendors(db_connection)
         load_sample_stats(db_connection)
+        load_advanced_data(db_connection)
 
     return db_connection, sql_file
 
