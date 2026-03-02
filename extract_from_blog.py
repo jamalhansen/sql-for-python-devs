@@ -45,11 +45,12 @@ def get_series_posts(blog_dir: Path, series_name: str) -> list[tuple[Path, int]]
 
         if in_series:
             weight = post.get("weight", 999)  # Default weight if not specified
-            posts_with_weight.append((index_md, weight))
+            date = post.get("date", "9999-12-31")  # Default date if not specified
+            posts_with_weight.append((index_md, weight, date))
 
-    # Sort by weight
-    posts_with_weight.sort(key=lambda x: x[1])
-    return posts_with_weight
+    # Sort by weight, then by date
+    posts_with_weight.sort(key=lambda x: (x[1], x[2]))
+    return [(p, w) for p, w, d in posts_with_weight]
 
 
 def extract_code_blocks(content: str, language: str = "python") -> list[str]:
